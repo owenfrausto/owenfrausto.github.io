@@ -1,0 +1,8 @@
+#center-text {
+	font-size: 25px;
+	font-family: Arial Black;
+	display: flex;
+  	justify-content: center;
+  	align-items: center;
+	height: 80%;
+}
