@@ -1,0 +1,32 @@
+/*
+ * COLOR GUIDE
+ * #E8C547 - Saffron (Sunshine)
+ * #30323D - Jet (Dark Sky) 
+ * #4D5061 - Davy's Gray (Light Grey Sky)
+ * #1098F7 - Dodger's Blue (Blue Sky)
+ * #DDDEE4 - Platinum (Gray Sky)
+ */
+:root{
+	--sun-color: #E8C547;
+	--sky-color: #1098F7;
+}
+
+body {
+	background-color: #DDDEE4;
+}
+
+.navbar-bg {
+	background: linear-gradient(to right, var(--sky-color), var(--sky-color) 45%, var(--sun-color) 50%, var(--sun-color) 75%, var(--sky-color) 80%);
+}
+
+.bg-sky {
+    background-color: #1098F7;
+}
+
+.bg-sun {
+	background-color: #E8C547;
+}
+
+.ash-text {
+	color: #CDD1C4;
+}
