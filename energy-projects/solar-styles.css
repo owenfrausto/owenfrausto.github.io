@@ -30,3 +30,10 @@ body {
 .ash-text {
 	color: #CDD1C4;
 }
+
+.panel {
+	background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 20px;
+}
