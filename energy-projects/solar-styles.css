@@ -11,8 +11,10 @@
 	--sky-color: #1098F7;
 }
 
-body {
+html, body {
 	background-color: #DDDEE4;
+	font-family: "VT323";
+	height: 100%;
 }
 
 .navbar-bg {
@@ -34,6 +36,6 @@ body {
 .panel {
 	background-color: #f0f0f0;
     border: 1px solid #ccc;
-    text-align: center;
     padding: 20px;
+	height: 100%;
 }
