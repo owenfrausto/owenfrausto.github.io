@@ -13,7 +13,7 @@
 
 @font-face {
     font-family: VT323;
-    src: url(VT323-Regular.ttf);
+    src: url("/VT323-Regular.ttf");
 }
 
 html, body {
