@@ -14,6 +14,10 @@
 @font-face {
     font-family: VT323;
     src: url("/energy-projects/VT323-Regular.ttf");
+	/*
+	 * change this url to /energy-projects/VT323-Regular.ttf when uploading
+	 * change to VT323-Regular.ttf when locally editing
+	 */
 }
 
 html, body {
