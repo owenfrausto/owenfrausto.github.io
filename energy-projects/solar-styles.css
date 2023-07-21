@@ -48,4 +48,49 @@ html, body {
     border: 1px solid #ccc;
     padding: 20px;
 	height: 100%;
+	
+	display: flex;
+	flex-direction: column;
+}
+
+.pricing-container{
+	background-color: green;
+	flex-grow: 1;
+	display: flex;
+	flex-direction: row;
+}
+
+.pricing-box{
+	background-color: blue;
+	width: 4%;
+	display: flex;
+	flex-direction: column;
+	justify-content: bottom;
+}
+
+.disable-select {
+    user-select: none; /* supported by Chrome and Opera */
+   -webkit-user-select: none; /* Safari */
+   -khtml-user-select: none; /* Konqueror HTML */
+   -moz-user-select: none; /* Firefox */
+   -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+.pricing-slider{
+	margin-top: auto; /* aligns this element and ones under it at bottom */
+	background-color: purple;
+	height: 4%;
+}
+
+.pricing-bar{
+	background-color: red;
+	text-align: center;
+	height: 50%;
+	max-height: 100%;
+}
+
+.pricing-label{
+	height: 10%;
+	background-color: yellow;
+	text-align: center;
 }

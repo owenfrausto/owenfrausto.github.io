@@ -1,0 +1,13 @@
+TO DO - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- add live update for cursor dragging
+- sandbox/calculate mode (do sandbox first)
+- add daily pricing profile panel
+- add daily pricing labels
+- integrate some kind of maximum price input
+- fix my name not staying at bottom
+- rewrite cloning initialization to include class list
+
+
+
+
+COMPLETED - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
