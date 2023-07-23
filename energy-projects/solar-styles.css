@@ -68,7 +68,7 @@ html, body {
 }
 
 .pricing-box{
-	background-color: blue;
+	background-color: #d5dce8;
 	width: 4%;
 	display: flex;
 	flex-direction: column;
@@ -85,12 +85,13 @@ html, body {
 
 .pricing-slider{
 	margin-top: auto; /* aligns this element and ones under it at bottom */
-	background-color: purple;
+	background-color: #36382E;
 	height: 4%;
 }
 
 .pricing-bar{
-	background-color: red;
+	background-color: var(--sky-color);
+	outline: 5px black;
 	text-align: center;
 	height: 50%;
 	max-height: 100%;
@@ -98,7 +99,7 @@ html, body {
 
 .pricing-label{
 	height: 10%;
-	background-color: yellow;
+	background-color: #f0f0f0;
 	text-align: center;
 }
 
