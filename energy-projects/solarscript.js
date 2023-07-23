@@ -52,12 +52,31 @@ function initialize_clones(){
 }
 
 function label_price_times(){
-	i = 12;
+	let i = 12;
 	let time_labels = document.querySelectorAll(".pricing-label");
 	time_labels.forEach(elem => {
 		elem.innerText = i;
 		i = i == 12 ? 1 : i+1;
 	});
+}
+
+function set_price_heights(){
+	let heights = [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 
+			0.7, 0.7, 0.7, 0.7, 0.7, 0.9, 0.9, 0.9, 0.9, 0.9, 0.7, 0.7, 0.7];
+	i = 0
+	
+	let bars = document.querySelectorAll(".pricing-bar");
+	for(let i = 0; i < bars.length; i++){
+		let maxHeight = (bars[i].parentNode.clientHeight 
+							- bars[i].parentNode.querySelectorAll(".pricing-slider")[0].clientHeight
+							- bars[i].parentNode.querySelectorAll(".pricing-label")[0].clientHeight);
+		bars[i].style.height = Math.round(heights[i] * maxHeight)+ "px";
+	}
+}
+
+function initialize_pricing_boxes(){
+	label_price_times();
+	set_price_heights();	
 }
 
 $(document).ready(function(){
@@ -66,8 +85,8 @@ $(document).ready(function(){
 	// Initialize clones
 	initialize_clones();
 
-	// Label pricing boxes
-	label_price_times();	
+	// Label pricing boxes and set initial heights
+	initialize_pricing_boxes();
 
 	// Initialize event listeners
 	$(".slider-input").on("change", event =>{
@@ -86,86 +105,84 @@ $(document).ready(function(){
 
 //---------------------------------------------------------------
 
-var sliderPosition;
-var mouseDown;
-var initialHeight;
+var inProgress = [];
 
-function touchMouseStart(e) {
-	e.preventDefault();
-  	mouseDown = true;
-	console.log("mouseDown")
-  	if (e.touches) {
-    	sliderPosition = e.touches[0].clientY;
-	} else {
-    	sliderPosition = e.clientY;
-	}	
-	let bar = e.currentTarget.parentElement.querySelectorAll(".pricing-bar")[0];
+class DragInProgress {
+	constructor(elem, initialHeight, sliderPosition){
+		this.elem = elem;
+		this.initialHeight = initialHeight;
+		this.sliderPosition = sliderPosition;
+
+		this.maxHeight = (elem.parentNode.clientHeight 
+							- elem.parentNode.querySelectorAll(".pricing-slider")[0].clientHeight
+							- elem.parentNode.querySelectorAll(".pricing-label")[0].clientHeight);
+	}
+
+	update(e){
+		if (e.touches)
+    		var position = e.touches[0].clientY;
+  		else
+			var position = e.clientY;
   	
-	e.currentTarget.style.backgroundColor = "pink";
-	initialHeight = bar.offsetHeight;
-  	//e.currentTarget.classList.add('slideable');
+		let diff = position - this.sliderPosition;
+		let height = this.initialHeight - diff;
+		//Scale to incriments of 10% of total height
+		let scaledHeight = height / this.maxHeight;
+		scaledHeight = Math.min(scaledHeight - (scaledHeight % 0.1), 1);
+		this.elem.style.height = Math.round(scaledHeight * this.maxHeight) + "px";
+	}
 }
 
-function touchMouseEnd(e) {
-  	e.preventDefault();
-	console.log(e);
-	console.log("mouseUp");
-  	mouseDown = false;
-	
-	let bar = e.currentTarget.parentElement.querySelectorAll(".pricing-bar")[0];
-	e.currentTarget.style.backgroundColor = "purple";
-	initialHeight = bar.offsetHeight;
-	//e.currentTarget.classList.remove("slideable");
+function beginSlide(e){
+	e.preventDefault();
+	if (e.touches) {
+		var sliderPosition = e.touches[0].clientY;
+	} else{
+		var sliderPosition = e.clientY;
+	}
+	let bar = e.currentTarget.parentElement.querySelectorAll(".pricing-bar")[0]
+	inProgress.push(new DragInProgress(bar, bar.offsetHeight, sliderPosition))
 }
 
-function touchMouseMove(e) {
-	console.log(e);
-	e.preventDefault();
-  	if (!mouseDown)
-    	return;
-  	if (e.touches)
-    	var position = e.touches[0].clientY;
-  	else
-		var position = e.clientY;
-  	
-	var height = position - sliderPosition;
-	let bar = e.currentTarget.parentElement.querySelectorAll(".pricing-bar")[0];
-
-  	//if ((initialHeight + height) <= bar.scrollHeight + 20) {
-	//	console.log('yes');
-    	bar.style.height = initialHeight - height + "px";
-  	//} else{
-	//	console.log("no");
-	//}
+function endSlide(e){
+	e.preventDefault();	
+	inProgress = [];
 }
 
 window.onload = function() {
 
-  $(".pricing-slider").on('touchstart', (e) => {
-    touchMouseStart(e)
-  });
-  $(".pricing-slider").on('mousedown', (e) => {
-    touchMouseStart(e)
-  });
-  $(".pricing-slider").on('touchend', (e) => {
-    touchMouseEnd(e)
-  });
-  $(".pricing-slider").on('mouseup', (e) => {
-    touchMouseEnd(e)
-  });
-  $(".pricing-slider").on('mouseout', (e) => {
-    //touchMouseEnd(e)
-  });
-  $(".pricing-slider").on('click', function(e) {
-    e.preventDefault();
-  })
-  $(".pricing-slider").on('touchcancel', (e) => {
-    touchMouseEnd(e)
-  });
-  $(".pricing-slider").on('touchmove', (e) => {
-    touchMouseMove(e)
-  });
-  $("body").on('mousemove', (e) => {
-    touchMouseMove(e)
-  });
+	$(".pricing-slider").on('touchstart', (e) => {
+		beginSlide(e);
+  	});
+  	$(".pricing-slider").on('mousedown', (e) => {
+		beginSlide(e);
+  	});
+  	$(".pricing-slider").on('touchend', (e) => {
+		endSlide(e);
+  	});
+  	
+	$(".pricing-slider").on('click', function(e) {
+    	e.preventDefault();
+  	})
+  	$(".pricing-slider").on('touchcancel', (e) => {
+		endSlide(e);
+  	});
+  	
+	$("body").on('touchmove', (e) => {
+    	inProgress.forEach( x => {
+			x.update(e);
+		});	
+  	});
+
+  	$("body").on('mousemove', (e) => {
+		inProgress.forEach( x => {
+			x.update(e);
+		});
+	});
+
+	$("body").on("mouseup", (e) => {
+		endSlide(e);
+	});
+
+
 }
