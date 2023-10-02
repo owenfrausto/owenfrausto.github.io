@@ -1,4 +1,4 @@
-/* 
+/*
  *	solarscript.js
  *	Owen Frausto July 16 2023
  *
@@ -51,6 +51,7 @@ function initialize_clones(){
 
 }
 
+// Initialize pricing clones functions ------------------------------------------
 function label_price_times(){
 	let i = 12;
 	let time_labels = document.querySelectorAll(".pricing-label");
@@ -61,13 +62,13 @@ function label_price_times(){
 }
 
 function set_price_heights(){
-	let heights = [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 
+	let heights = [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7,
 			0.7, 0.7, 0.7, 0.7, 0.7, 0.9, 0.9, 0.9, 0.9, 0.9, 0.7, 0.7, 0.7];
 	i = 0
-	
+
 	let bars = document.querySelectorAll(".pricing-bar");
 	for(let i = 0; i < bars.length; i++){
-		let maxHeight = (bars[i].parentNode.clientHeight 
+		let maxHeight = (bars[i].parentNode.clientHeight
 							- bars[i].parentNode.querySelectorAll(".pricing-slider")[0].clientHeight
 							- bars[i].parentNode.querySelectorAll(".pricing-label")[0].clientHeight);
 		bars[i].style.height = Math.round(heights[i] * maxHeight)+ "px";
@@ -76,44 +77,51 @@ function set_price_heights(){
 
 function initialize_pricing_boxes(){
 	label_price_times();
-	set_price_heights();	
+	set_price_heights();
 }
 
-$(document).ready(function(){
-	console.log("solarscript.js running on document ready");
-	
-	// Initialize clones
-	initialize_clones();
-
-	// Label pricing boxes and set initial heights
-	initialize_pricing_boxes();
-
-	// Initialize event listeners
-	$(".slider-input").on("change", event =>{
-		let slider = event.currentTarget;
-		let v = bound(-90, 90, event.target.value);
-		slider.querySelectorAll(".slider-input-number")[0].value = v;
-		slider.querySelectorAll(".slider-input-range")[0].value = v;
+// Initialize usage clones functions -------------------------------------------
+function label_usage_times(){
+	let i = 12;
+	let time_labels = document.querySelectorAll(".usage-label");
+	time_labels.forEach(elem => {
+		elem.innerText = i;
+		i = i == 12 ? 1 : i+1;
 	});
-	
+}
 
-	// Initialize all slider inputs with class functions
-	//$(".slider-input").each(i => {
-	//	new SliderInput( $(".slider-input")[i] );
-	//});
-});
+function set_usage_heights(){
+	let heights = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.4, 0.5, 0.7, 0.6,
+			0.3, 0.2, 0.3, 0.2, 0.2, 0.3, 0.4, 0.7, 0.8, 0.7, 0.4, 0.3, 0.2];
+	i = 0
+
+	let bars = document.querySelectorAll(".usage-bar");
+	for(let i = 0; i < bars.length; i++){
+		let maxHeight = (bars[i].parentNode.clientHeight
+							- bars[i].parentNode.querySelectorAll(".usage-slider")[0].clientHeight
+							- bars[i].parentNode.querySelectorAll(".usage-label")[0].clientHeight);
+		bars[i].style.height = Math.round(heights[i] * maxHeight)+ "px";
+	}
+}
+
+function initialize_usage_boxes(){
+	label_usage_times();
+	set_usage_heights();
+}
+
+
 
 //---------------------------------------------------------------
 
 var inProgress = [];
 
-class DragInProgress {
+class PricingDragInProgress {
 	constructor(elem, initialHeight, sliderPosition){
 		this.elem = elem;
 		this.initialHeight = initialHeight;
 		this.sliderPosition = sliderPosition;
 
-		this.maxHeight = (elem.parentNode.clientHeight 
+		this.maxHeight = (elem.parentNode.clientHeight
 							- elem.parentNode.querySelectorAll(".pricing-slider")[0].clientHeight
 							- elem.parentNode.querySelectorAll(".pricing-label")[0].clientHeight);
 	}
@@ -123,7 +131,7 @@ class DragInProgress {
     		var position = e.touches[0].clientY;
   		else
 			var position = e.clientY;
-  	
+
 		let diff = position - this.sliderPosition;
 		let height = this.initialHeight - diff;
 		//Scale to incriments of 10% of total height
@@ -133,48 +141,113 @@ class DragInProgress {
 	}
 }
 
-function beginSlide(e){
+class UsageDragInProgress {
+	constructor(elem, initialHeight, sliderPosition){
+		this.elem = elem;
+		this.initialHeight = initialHeight;
+		this.sliderPosition = sliderPosition;
+
+		this.maxHeight = (elem.parentNode.clientHeight
+							- elem.parentNode.querySelectorAll(".usage-slider")[0].clientHeight
+							- elem.parentNode.querySelectorAll(".usage-label")[0].clientHeight);
+	}
+
+	update(e){
+		if (e.touches)
+    		var position = e.touches[0].clientY;
+  		else
+			var position = e.clientY;
+
+		let diff = position - this.sliderPosition;
+		let height = this.initialHeight - diff;
+		//Scale to incriments of 10% of total height
+		let scaledHeight = height / this.maxHeight;
+		scaledHeight = Math.min(scaledHeight - (scaledHeight % 0.1), 1);
+		this.elem.style.height = Math.round(scaledHeight * this.maxHeight) + "px";
+	}
+}
+
+function beginSlide(e, elem_type){
+	/*
+		Supported elem_type:
+		pricing
+		usage
+	*/
+
 	e.preventDefault();
+	var bar;
 	if (e.touches) {
 		var sliderPosition = e.touches[0].clientY;
 	} else{
 		var sliderPosition = e.clientY;
 	}
-	let bar = e.currentTarget.parentElement.querySelectorAll(".pricing-bar")[0]
-	inProgress.push(new DragInProgress(bar, bar.offsetHeight, sliderPosition))
+	switch(elem_type){
+		case "pricing":
+			bar = e.currentTarget.parentElement.querySelectorAll(".pricing-bar")[0];
+			inProgress.push(new PricingDragInProgress(bar, bar.offsetHeight, sliderPosition));
+			break;
+		case "usage":
+			bar = e.currentTarget.parentElement.querySelectorAll(".usage-bar")[0];
+			inProgress.push(new UsageDragInProgress(bar, bar.offsetHeight, sliderPosition));
+			break;
+	}
+
 }
 
 function endSlide(e){
-	e.preventDefault();	
+	e.preventDefault();
 	inProgress = [];
 }
 
-window.onload = function() {
-
+function addEventListeners(){
+	// Initialize event listeners
+	// Pricing event listeners
 	$(".pricing-slider").on('touchstart', (e) => {
-		beginSlide(e);
-  	});
-  	$(".pricing-slider").on('mousedown', (e) => {
-		beginSlide(e);
-  	});
-  	$(".pricing-slider").on('touchend', (e) => {
+		beginSlide(e, "pricing");
+  });
+  $(".pricing-slider").on('mousedown', (e) => {
+		beginSlide(e, "pricing");
+  });
+  $(".pricing-slider").on('touchend', (e) => {
 		endSlide(e);
-  	});
-  	
+  });
+	$(".pricing-slider").on('touchend', (e) => {
+		endSlide(e);
+	});
 	$(".pricing-slider").on('click', function(e) {
-    	e.preventDefault();
-  	})
-  	$(".pricing-slider").on('touchcancel', (e) => {
+		e.preventDefault();
+	})
+	$(".pricing-slider").on('touchcancel', (e) => {
 		endSlide(e);
-  	});
-  	
+	});
+
+	// Usage event listeners
+	$(".usage-slider").on('touchstart', (e) => {
+		beginSlide(e, "usage");
+	});
+	$(".usage-slider").on('mousedown', (e) => {
+		beginSlide(e, "usage");
+	});
+	$(".usage-slider").on('touchend', (e) => {
+		endSlide(e);
+	});
+	$(".usage-slider").on('touchend', (e) => {
+		endSlide(e);
+	});
+	$(".usage-slider").on('click', function(e) {
+		e.preventDefault();
+	})
+	$(".usage-slider").on('touchcancel', (e) => {
+		endSlide(e);
+	});
+
+	// Body event listeners
 	$("body").on('touchmove', (e) => {
     	inProgress.forEach( x => {
 			x.update(e);
-		});	
-  	});
-
-  	$("body").on('mousemove', (e) => {
+		});
+  });
+	$("body").on('mousemove', (e) => {
 		inProgress.forEach( x => {
 			x.update(e);
 		});
@@ -183,6 +256,33 @@ window.onload = function() {
 	$("body").on("mouseup", (e) => {
 		endSlide(e);
 	});
-
-
 }
+
+// Initialize Document ---------------------------------------------------------
+
+$(document).ready(function(){
+	console.log("solarscript.js running on document ready");
+
+	// Initialize clones
+	initialize_clones();
+
+	// Label pricing boxes and set initial heights
+	initialize_pricing_boxes();
+	initialize_usage_boxes();
+
+	// Initialize event listeners
+	$(".slider-input").on("change", event =>{
+		let slider = event.currentTarget;
+		let v = bound(-90, 90, event.target.value);
+		slider.querySelectorAll(".slider-input-number")[0].value = v;
+		slider.querySelectorAll(".slider-input-range")[0].value = v;
+	});
+
+
+	// Initialize all slider inputs with class functions
+	//$(".slider-input").each(i => {
+	//	new SliderInput( $(".slider-input")[i] );
+	//});
+
+	addEventListeners();
+});

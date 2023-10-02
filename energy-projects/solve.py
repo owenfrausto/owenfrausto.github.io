@@ -1,33 +1,18 @@
 import numpy as np
 import scipy
 
-a = 10
-b = 5
-n = 1
+N = 2 # number of solar panels
 
-def cost(x):
-    if x > 0:
-        return a * x
-    else:
-        return -b * x
-vcost = np.vectorize(cost)
+use_vec = np.zeros(24)
+price_vec = np.array([0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3,
+                0.3, 0.3, 0.45, 0.45, 0.45, 0.45, 0.45, 0.3, 0.3, 0.3])
 
-def fun(x):
-    return np.linalg.norm(vcost(np.cos(x)));
-
-constraint_list = []
-constraint = scipy.optimize.LinearConstraint(
-    A = np.eye(n),
-    lb = np.ones(n) * -np.pi,
-    ub = np.ones(n) * np.pi
-)
-constraint_list.append(constraint)
-
-res = scipy.optimize.minimize(
-    fun = fun,
-    x0 = np.random.rand(n),
-    constraints = constraint_list
-)
-
-print(res)
+def f(x):
+    s = 0
+    for day in range(365):
+        for hour in range(24):
+            a = price_vec[hour]
+            b = 
+            s += (a * x)/(1+np.exp(-x)) + (b*x)*(1 - 1/(1+np.exp(-x)))
+    return s
 
