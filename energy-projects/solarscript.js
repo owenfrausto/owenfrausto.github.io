@@ -62,16 +62,17 @@ function label_price_times(){
 }
 
 function set_price_heights(){
-	let heights = [0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7, 0.7,
-			0.7, 0.7, 0.7, 0.7, 0.7, 0.9, 0.9, 0.9, 0.9, 0.9, 0.7, 0.7, 0.7];
+	let heights = [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.06, 0.06, 0.06,
+		0.06, 0.06, 0.06, 0.06, 0.06, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.06, 0.06,
+		0.06, 0.06, 0.06, 0.06];
 	i = 0
-
+	max_price = 0.36
 	let bars = document.querySelectorAll(".pricing-bar");
 	for(let i = 0; i < bars.length; i++){
 		let maxHeight = (bars[i].parentNode.clientHeight
 							- bars[i].parentNode.querySelectorAll(".pricing-slider")[0].clientHeight
 							- bars[i].parentNode.querySelectorAll(".pricing-label")[0].clientHeight);
-		bars[i].style.height = Math.round(heights[i] * maxHeight)+ "px";
+		bars[i].style.height = Math.round((heights[i]/max_price)* maxHeight)+ "px";
 	}
 }
 
@@ -91,8 +92,8 @@ function label_usage_times(){
 }
 
 function set_usage_heights(){
-	let heights = [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.4, 0.5, 0.7, 0.6,
-			0.3, 0.2, 0.3, 0.2, 0.2, 0.3, 0.4, 0.7, 0.8, 0.7, 0.4, 0.3, 0.2];
+	let heights = [0.4, 0.3, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.5, 0.5, 0.5,
+			0.5, 0.5, 0.5, 0.4, 0.4, 0.5, 0.6, 0.7, 0.7, 0.6, 0.6, 0.5, 0.4];
 	i = 0
 
 	let bars = document.querySelectorAll(".usage-bar");

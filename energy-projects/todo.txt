@@ -1,8 +1,11 @@
 TO DO - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - sandbox/calculate mode (do sandbox first)
-- integrate some kind of maximum price input
+- price/usage scale input
+  - dynamic axis rescaling
 - rewrite cloning initialization to include class list
-
+- add N solar panel input
+- add solar panel power input
+- fix sliders to initialize at actual possible heights
 
 
 
@@ -11,3 +14,4 @@ COMPLETED - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - add live update for cursor dragging
 - add daily pricing labels
 - add daily pricing profile panel
+- add usage labels
