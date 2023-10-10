@@ -6,7 +6,7 @@ TO DO - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - add N solar panel input
 - add solar panel power input
 - fix sliders to initialize at actual possible heights
-
+- Change cursor image on hover over sliders
 
 
 COMPLETED - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
