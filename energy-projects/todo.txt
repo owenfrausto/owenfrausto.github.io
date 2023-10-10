@@ -8,6 +8,8 @@ Web Page
 - implement solar panel power input
 - fix sliders to initialize at actual possible heights
 - Change cursor image on hover over sliders
+- Add in results graph
+- Fix mobile formatting (text size, box sizing, and footer)
 
 Solver
 - Pre-calculate list of inclination angles so they just have to be indexed

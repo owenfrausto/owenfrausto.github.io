@@ -53,13 +53,13 @@ html, body {
 	flex-direction: column;
 }
 
-.pricing-container, .usage-container{
+.pricing-container, .usage-container, .result-container{
 	flex-grow: 1;
 	display: flex;
 	flex-direction: row;
 }
 
-.pricing-axis-label, .usage-axis-label{
+.pricing-axis-label, .usage-axis-label, .result-box{
 	width: 4%;
 	margin-right: 5px;
 	text-align: right;
@@ -67,12 +67,13 @@ html, body {
 	flex-direction: column;
 }
 
-.pricing-box, .usage-box{
+.pricing-box, .usage-box, .result-box{
 	background-color: #d5dce8;
 	width: 4%;
 	display: flex;
 	flex-direction: column;
 	justify-content: bottom;
+	align-items: center;
 }
 
 .disable-select {
@@ -89,6 +90,13 @@ html, body {
 	height: 4%;
 }
 
+.result-slider{
+	margin-top: auto;/* aligns this element and ones under it at bottom */
+	background-color: #36382E;
+	height: 100%;
+	max-width: 75%
+}
+
 .pricing-bar, .usage-bar{
 	background-color: var(--sky-color);
 	outline: 5px black;
@@ -97,7 +105,16 @@ html, body {
 	max-height: 100%;
 }
 
-.pricing-label, .usage-label{
+.result-bar{
+	background-color: var(--sun-color);
+	outline: 5px black;
+	text-align: center;
+	height: 50%;
+	max-width: 50%;
+	max-height: 100%;
+}
+
+.pricing-label, .usage-label, .result-label{
 	height: 10%;
 	background-color: #f0f0f0;
 	text-align: center;
