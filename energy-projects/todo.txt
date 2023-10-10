@@ -1,12 +1,16 @@
 TO DO - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Web Page
 - sandbox/calculate mode (do sandbox first)
 - price/usage scale input
   - dynamic axis rescaling
 - rewrite cloning initialization to include class list
-- add N solar panel input
-- add solar panel power input
+- implement N solar panel input
+- implement solar panel power input
 - fix sliders to initialize at actual possible heights
 - Change cursor image on hover over sliders
+
+Solver
+- Pre-calculate list of inclination angles so they just have to be indexed
 
 
 COMPLETED - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
