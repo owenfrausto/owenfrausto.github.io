@@ -90,11 +90,15 @@ html, body {
 	height: 4%;
 }
 
+.pricing-slider:hover, .usage-slider{
+	cursor: row-resize;
+}
+
 .result-slider{
 	margin-top: auto;/* aligns this element and ones under it at bottom */
 	background-color: #36382E;
-	height: 100%;
-	max-width: 75%
+	padding-top: 100%;
+	border-radius: 50%;
 }
 
 .pricing-bar, .usage-bar{

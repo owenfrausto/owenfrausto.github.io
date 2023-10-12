@@ -51,63 +51,30 @@ function initialize_clones(){
 
 }
 
-// Initialize pricing clones functions ------------------------------------------
-function label_price_times(){
+function setBoxHeight(height, maxHeight, box){
+	// Takes in height in px and scales to incriment of 10% of max height
+	let scaledHeight = height / maxHeight;
+	scaledHeight = Math.min(scaledHeight - (scaledHeight % 0.1), 1);
+	box.style.height = Math.round(scaledHeight * maxHeight) + "px";
+}
+
+// Initialize heights and hour labels
+function initialize_box_classes(class_name, initial_heights){
+	// Set usage times
 	let i = 12;
-	let time_labels = document.querySelectorAll(".pricing-label");
+	let time_labels = document.querySelectorAll(`.${class_name}-label`);
 	time_labels.forEach(elem => {
 		elem.innerText = i;
 		i = i == 12 ? 1 : i+1;
 	});
-}
-
-function set_price_heights(){
-	let heights = [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.06, 0.06, 0.06,
-		0.06, 0.06, 0.06, 0.06, 0.06, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.06, 0.06,
-		0.06, 0.06, 0.06, 0.06];
-	i = 0
-	max_price = 0.36
-	let bars = document.querySelectorAll(".pricing-bar");
+	let maxHeight = Math.max(...initial_heights);
+	let bars = document.querySelectorAll(`.${class_name}-bar`);
 	for(let i = 0; i < bars.length; i++){
-		let maxHeight = (bars[i].parentNode.clientHeight
-							- bars[i].parentNode.querySelectorAll(".pricing-slider")[0].clientHeight
-							- bars[i].parentNode.querySelectorAll(".pricing-label")[0].clientHeight);
-		bars[i].style.height = Math.round((heights[i]/max_price)* maxHeight)+ "px";
+		let maxHeightPx = (bars[i].parentNode.clientHeight
+							- bars[i].parentNode.querySelectorAll(`.${class_name}-slider`)[0].clientHeight
+							- bars[i].parentNode.querySelectorAll(`.${class_name}-label`)[0].clientHeight);
+		setBoxHeight(initial_heights[i]/maxHeight*maxHeightPx, maxHeightPx, bars[i]);
 	}
-}
-
-function initialize_pricing_boxes(){
-	label_price_times();
-	set_price_heights();
-}
-
-// Initialize usage clones functions -------------------------------------------
-function label_usage_times(){
-	let i = 12;
-	let time_labels = document.querySelectorAll(".usage-label");
-	time_labels.forEach(elem => {
-		elem.innerText = i;
-		i = i == 12 ? 1 : i+1;
-	});
-}
-
-function set_usage_heights(){
-	let heights = [0.4, 0.3, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.5, 0.5, 0.5,
-			0.5, 0.5, 0.5, 0.4, 0.4, 0.5, 0.6, 0.7, 0.7, 0.6, 0.6, 0.5, 0.4];
-	i = 0
-
-	let bars = document.querySelectorAll(".usage-bar");
-	for(let i = 0; i < bars.length; i++){
-		let maxHeight = (bars[i].parentNode.clientHeight
-							- bars[i].parentNode.querySelectorAll(".usage-slider")[0].clientHeight
-							- bars[i].parentNode.querySelectorAll(".usage-label")[0].clientHeight);
-		bars[i].style.height = Math.round(heights[i] * maxHeight)+ "px";
-	}
-}
-
-function initialize_usage_boxes(){
-	label_usage_times();
-	set_usage_heights();
 }
 
 
@@ -162,9 +129,7 @@ class UsageDragInProgress {
 		let diff = position - this.sliderPosition;
 		let height = this.initialHeight - diff;
 		//Scale to incriments of 10% of total height
-		let scaledHeight = height / this.maxHeight;
-		scaledHeight = Math.min(scaledHeight - (scaledHeight % 0.1), 1);
-		this.elem.style.height = Math.round(scaledHeight * this.maxHeight) + "px";
+		setBoxHeight(height, this.maxHeight, this.elem);
 	}
 }
 
@@ -267,9 +232,13 @@ $(document).ready(function(){
 	// Initialize clones
 	initialize_clones();
 
-	// Label pricing boxes and set initial heights
-	initialize_pricing_boxes();
-	initialize_usage_boxes();
+	// Label boxes and set initial heights
+	initialize_box_classes("pricing", [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.06, 0.06, 0.06,
+		0.06, 0.06, 0.06, 0.06, 0.06, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.06, 0.06,
+		0.06, 0.06, 0.06, 0.06]);
+	initialize_box_classes("usage", [0.4, 0.3, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.5, 0.5, 0.5,
+			0.5, 0.5, 0.5, 0.4, 0.4, 0.5, 0.6, 0.7, 0.7, 0.6, 0.6, 0.5, 0.4]);
+	initialize_box_classes("result", [0, 0, 0, 0, 0, 0, 0, 0.87, 0.96, 0.99, 0.96, 0.85, 0.69, 0.49, 0.25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
 
 	// Initialize event listeners
 	$(".slider-input").on("change", event =>{
