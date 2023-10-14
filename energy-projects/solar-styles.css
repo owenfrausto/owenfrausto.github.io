@@ -59,7 +59,7 @@ html, body {
 	flex-direction: row;
 }
 
-.pricing-axis-label, .usage-axis-label, .result-box{
+.pricing-axis-label, .usage-axis-label, .result-axis-label{
 	width: 4%;
 	margin-right: 5px;
 	text-align: right;

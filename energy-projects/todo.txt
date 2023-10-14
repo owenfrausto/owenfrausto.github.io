@@ -1,15 +1,23 @@
 TO DO - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Big picture
+- Switch to baseline price model
+
 Web Page
-- sandbox/calculate mode (do sandbox first)
 - price/usage scale input
-  - dynamic axis rescaling/relabling
+  - dynamic axis rescaling/relabeling
 - rewrite cloning initialization to include class list
-- implement N solar panel input
-- implement solar panel power input
 - Change cursor image on hover over sliders
 - Add in results graph
 - Fix mobile formatting (text size, box sizing, and footer)
 - "draw distribution"
+- connect front and back end
+- Rework % input?
+  - Might go away with baseline model
+- Add degree symbol to latitude?
+- Fix weird textbox arrow action
+- fix sliders to initialize at actual possible heights
+
+- More robust indexing for retrieving profile
 
 Solver
 - Pre-calculate list of inclination angles so they just have to be indexed
@@ -21,4 +29,10 @@ COMPLETED - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 - add daily pricing labels
 - add daily pricing profile panel
 - add usage labels
-- fix sliders to initialize at actual possible heights
+
+- implement N solar panel input
+- implement solar panel power input
+
+
+SCRAPPED - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+- sandbox/calculate mode (do sandbox first)?

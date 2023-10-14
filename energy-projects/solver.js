@@ -202,9 +202,49 @@ function swarm_solve(max_iter, N_swarm, N, P, lat, mu, pricing_profile, usage_pr
   for(let i = 0; i < max_iter; i++){
     //console.log(swarm.global_best_gain);
     swarm.stepSwarm();
+    console.log(swarm.global_best_gain);
   }
   //console.log(swarm.global_best_x);
   return swarm.global_best_x;
+}
+
+function generateSolarProfile(angles, P, lat, mu){
+  profile = [];
+  let phi = lat;
+  let n = 125; // Might want to update
+  let N = angles.length/2;
+  let delta = 23.45*Math.sin(2*Math.PI*(284+n)/365)*Math.PI/180;
+  // Sunrise angle in radians
+  let w_s = Math.acos(-Math.tan(phi)*Math.tan(delta));
+
+  for(let h=0; h<24; h++){
+    // Hour angle in radians
+    let w = -15*(h-12)*Math.PI/180;
+
+    //Calculate total generation for hour
+    let generation = 0;
+    for(let i=0; i<N; i++){ // Loop through pairs of solar panel angles
+      // Index angles
+      let gamma = angles[2*i];
+      let beta = angles[(2*i) + 1];
+
+      // See document for derivation/justification:
+      cos_theta =
+        Math.sin(delta)*Math.sin(phi)*Math.cos(beta)
+        -Math.sin(delta)*Math.cos(phi)*Math.sin(beta)*Math.cos(gamma)
+        +Math.cos(delta)*Math.cos(phi)*Math.cos(beta)*Math.cos(w)
+        +Math.cos(delta)*Math.sin(phi)*Math.sin(beta)*Math.cos(gamma)*Math.cos(w)
+        +Math.cos(delta)*Math.sin(beta)*Math.sin(gamma)*Math.sin(w);
+      theta = Math.acos(cos_theta);
+      sun_visible = (theta < Math.PI/2 && theta > -Math.PI/2)
+                      && (w < w_s && w > -w_s);
+      if(sun_visible){
+        generation += P*cos_theta;
+      }
+    }
+    profile.push(generation);
+  }
+  return profile;
 }
 
 /*
@@ -215,3 +255,47 @@ let usage = [400, 300, 200, 200, 200, 300, 300, 400, 500, 500, 500,
     500, 500, 500, 400, 400, 500, 600, 700, 700, 600, 600, 500, 400]
 swarm_solve(500, 30, 3, 425, 0.68, 0.8, pricing, usage)
 */
+
+function getProfile(name, scale){
+  container = $(`.${name}-container`);
+  // Get maximum axis value
+  axis_max = parseFloat(container.find(`.${name}-axis-label`)[0].children[0].innerHTML);
+  sliders = Array.from(container.find(`.${name}-box`));
+  profile = [];
+  // Get the height of each bar
+  sliders.forEach((elem, i) => {
+    // THIS NEEDS TO CHANGE IF TEMPLATES CHANGE
+    box_height = elem.offsetHeight;
+    slider_height = elem.children[0].offsetHeight;
+    bar_height = elem.children[1].offsetHeight;
+    label_height = elem.children[2].offsetHeight;
+
+    // Calculate proportion of height * axis max
+    profile.push(axis_max * bar_height / (box_height - label_height - slider_height) * scale);
+  });
+  return profile
+}
+
+// Connect solver to front end
+$(document).ready(function(){
+  // Trigger solver
+  $("#calculate").on("click", function(){
+    // Get solver parameters from html elements
+    let P = parseFloat($("#parameter-P")[0].value);
+    let N = parseInt($("#parameter-N")[0].value);
+    let lat = parseFloat($("#parameter-lat")[0].value);
+    let mu = parseFloat($("#parameter-mu")[0].value);
+
+    let pricing_profile = getProfile("pricing", scale=0.001);
+    let usage_profile = getProfile("usage", scale=1);
+
+    // Run solver
+    solution = swarm_solve(max_iter=50, N_swarm=30, N, P, lat, mu, pricing_profile, usage_profile)
+
+    // Generate solar profile
+    solar_profile = generateSolarProfile(solution, P, lat, mu);
+
+    // Display results
+    initialize_box_classes("result", solar_profile, scale_axis="auto")
+  });
+});

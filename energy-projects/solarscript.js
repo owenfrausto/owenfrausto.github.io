@@ -51,6 +51,14 @@ function initialize_clones(){
 
 }
 
+// Label and autoscale the axis for a given chart
+function scaleAxis(axis_holder, max){
+	// Set elements to 100%, 75%, 50%, and 25% of the max, respectively
+	for(let i = 0; i < 4; i++){
+		axis_holder.children[i].innerHTML = Math.round((4-i)/4*max*100, 2)/100;
+	}
+}
+
 function setBoxHeight(height, maxHeight, box){
 	// Takes in height in px and scales to incriment of 10% of max height
 	let scaledHeight = height / maxHeight;
@@ -59,15 +67,17 @@ function setBoxHeight(height, maxHeight, box){
 }
 
 // Initialize heights and hour labels
-function initialize_box_classes(class_name, initial_heights){
-	// Set usage times
+function initialize_box_classes(class_name, initial_heights, scale_axis="auto"){
+	// Set Label al times with 12-hr time
 	let i = 12;
 	let time_labels = document.querySelectorAll(`.${class_name}-label`);
 	time_labels.forEach(elem => {
 		elem.innerText = i;
 		i = i == 12 ? 1 : i+1;
 	});
-	let maxHeight = Math.max(...initial_heights);
+
+	// Set initial slider heights
+	let maxHeight = scale_axis == "auto" ? Math.max(...initial_heights) : scale_axis;
 	let bars = document.querySelectorAll(`.${class_name}-bar`);
 	for(let i = 0; i < bars.length; i++){
 		let maxHeightPx = (bars[i].parentNode.clientHeight
@@ -75,11 +85,16 @@ function initialize_box_classes(class_name, initial_heights){
 							- bars[i].parentNode.querySelectorAll(`.${class_name}-label`)[0].clientHeight);
 		setBoxHeight(initial_heights[i]/maxHeight*maxHeightPx, maxHeightPx, bars[i]);
 	}
+
+	// Set axis values$
+	let elem = $(`.${class_name}-container`).find(`.${class_name}-axis-label`)[0];
+	scaleAxis(elem, maxHeight);
 }
 
 
 
 //---------------------------------------------------------------
+// Handle dynamic update of sliders
 
 var inProgress = [];
 
@@ -157,7 +172,6 @@ function beginSlide(e, elem_type){
 			inProgress.push(new UsageDragInProgress(bar, bar.offsetHeight, sliderPosition));
 			break;
 	}
-
 }
 
 function endSlide(e){
@@ -233,12 +247,13 @@ $(document).ready(function(){
 	initialize_clones();
 
 	// Label boxes and set initial heights
-	initialize_box_classes("pricing", [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.06, 0.06, 0.06,
-		0.06, 0.06, 0.06, 0.06, 0.06, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.06, 0.06,
-		0.06, 0.06, 0.06, 0.06]);
-	initialize_box_classes("usage", [0.4, 0.3, 0.2, 0.2, 0.2, 0.3, 0.3, 0.4, 0.5, 0.5, 0.5,
-			0.5, 0.5, 0.5, 0.4, 0.4, 0.5, 0.6, 0.7, 0.7, 0.6, 0.6, 0.5, 0.4]);
-	initialize_box_classes("result", [0, 0, 0, 0, 0, 0, 0, 0.87, 0.96, 0.99, 0.96, 0.85, 0.69, 0.49, 0.25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+	initialize_box_classes("pricing", [4, 4, 4, 4, 4, 4, 4, 6, 6, 6,
+		6, 6, 6, 6, 6, 30, 30, 30, 30, 30, 30, 6, 6,
+		6, 6, 6, 6]);
+	initialize_box_classes("usage", [400, 300, 200, 200, 200, 300, 300, 400, 500, 500, 500,
+			500, 500, 500, 400, 400, 500, 600, 700, 700, 600, 600, 500, 400]);
+	initialize_box_classes("result", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 700);
 
 	// Initialize event listeners
 	$(".slider-input").on("change", event =>{
@@ -247,7 +262,6 @@ $(document).ready(function(){
 		slider.querySelectorAll(".slider-input-number")[0].value = v;
 		slider.querySelectorAll(".slider-input-range")[0].value = v;
 	});
-
 
 	// Initialize all slider inputs with class functions
 	//$(".slider-input").each(i => {
