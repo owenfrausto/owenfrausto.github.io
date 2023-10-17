@@ -193,16 +193,15 @@ function addEventListeners(){
 		});
 
 		$(`.${elem_type}-container`).on("touchmove", (e) => {
+			e.preventDefault();
 				if(inProgress.length == 0){
 					inProgress.push(new DragInProgress(e.currentTarget, elem_type));
 				} else{
 					inProgress.forEach((x, i) => {
 						x.update(e);
 					});
-
 				}
 		});
-
 	});
 
 	// End movement

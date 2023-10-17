@@ -90,10 +90,6 @@ html, body {
 	height: 4%;
 }
 
-.pricing-box:hover, .usage-box:hover{
-	
-}
-
 .result-slider{
 	margin-top: auto;/* aligns this element and ones under it at bottom */
 	background-color: #36382E;
