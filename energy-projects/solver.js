@@ -280,6 +280,7 @@ function getProfile(name, scale){
 $(document).ready(function(){
   // Trigger solver
   $("#calculate").on("click", function(){
+
     // Get solver parameters from html elements
     let P = parseFloat($("#parameter-P")[0].value);
     let N = parseInt($("#parameter-N")[0].value);
@@ -289,13 +290,13 @@ $(document).ready(function(){
     let pricing_profile = getProfile("pricing", scale=0.001);
     let usage_profile = getProfile("usage", scale=1);
 
-    // Run solver
-    solution = swarm_solve(max_iter=50, N_swarm=30, N, P, lat, mu, pricing_profile, usage_profile)
+      // Run solver
+      solution = swarm_solve(max_iter=50, N_swarm=30, N, P, lat, mu, pricing_profile, usage_profile)
 
-    // Generate solar profile
-    solar_profile = generateSolarProfile(solution, P, lat, mu);
+      // Generate solar profile
+      solar_profile = generateSolarProfile(solution, P, lat, mu);
 
-    // Display results
-    initialize_box_classes("result", solar_profile, scale_axis="auto")
+      // Display results
+      initialize_box_classes("result", solar_profile, scale_axis="auto")
   });
 });

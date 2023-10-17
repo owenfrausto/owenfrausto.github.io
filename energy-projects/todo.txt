@@ -15,6 +15,7 @@ Web Page
   - Might go away with baseline model
 - Add degree symbol to latitude?
 - Fix weird textbox arrow action
+  - Might come from prevent default thing
 - fix sliders to initialize at actual possible heights
 
 - More robust indexing for retrieving profile

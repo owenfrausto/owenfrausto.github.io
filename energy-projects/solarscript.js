@@ -98,143 +98,117 @@ function initialize_box_classes(class_name, initial_heights, scale_axis="auto"){
 
 var inProgress = [];
 
-class PricingDragInProgress {
-	constructor(elem, initialHeight, sliderPosition){
-		this.elem = elem;
-		this.initialHeight = initialHeight;
-		this.sliderPosition = sliderPosition;
+class TouchInProgress {
+	constructor(elem, elem_type){
+		this.elem_type = elem_type;
+		this.setTargetElement(elem);
+	}
 
-		this.maxHeight = (elem.parentNode.clientHeight
-							- elem.parentNode.querySelectorAll(".pricing-slider")[0].clientHeight
-							- elem.parentNode.querySelectorAll(".pricing-label")[0].clientHeight);
+	setTargetElement(elem){
+		this.bar = elem.querySelectorAll(`.${this.elem_type}-bar`)[0];
+		this.labelHeight = elem.querySelectorAll(`.${this.elem_type}-label`)[0].clientHeight;
+		this.sliderHeight = elem.querySelectorAll(`.${this.elem_type}-slider`)[0].clientHeight
+		this.maxHeight = (elem.clientHeight - this.sliderHeight - this.labelHeight);
 	}
 
 	update(e){
-		if (e.touches)
-    		var position = e.touches[0].clientY;
-  		else
-			var position = e.clientY;
+		this.setTargetElement(e.currentTarget);
+		let position = e.clientY;
 
-		let diff = position - this.sliderPosition;
-		let height = this.initialHeight - diff;
-		//Scale to incriments of 10% of total height
-		let scaledHeight = height / this.maxHeight;
-		scaledHeight = Math.min(scaledHeight - (scaledHeight % 0.1), 1);
-		this.elem.style.height = Math.round(scaledHeight * this.maxHeight) + "px";
+		let height = this.maxHeight + this.sliderHeight + e.currentTarget.getBoundingClientRect().top - position;
+		setBoxHeight(height, this.maxHeight, this.bar);
 	}
 }
 
-class UsageDragInProgress {
-	constructor(elem, initialHeight, sliderPosition){
+class DragInProgress {
+	constructor(elem, elem_type){
+		this.elem_type = elem_type;
 		this.elem = elem;
-		this.initialHeight = initialHeight;
-		this.sliderPosition = sliderPosition;
+		this.target_elem;
+		//this.setTargetElement(elem);
+	}
 
-		this.maxHeight = (elem.parentNode.clientHeight
-							- elem.parentNode.querySelectorAll(".usage-slider")[0].clientHeight
-							- elem.parentNode.querySelectorAll(".usage-label")[0].clientHeight);
+	setTargetElement(elem){
+		this.bar = elem.querySelectorAll(`.${this.elem_type}-bar`)[0];
+		this.labelHeight = elem.querySelectorAll(`.${this.elem_type}-label`)[0].clientHeight;
+		this.sliderHeight = elem.querySelectorAll(`.${this.elem_type}-slider`)[0].clientHeight
+		this.maxHeight = (elem.clientHeight - this.sliderHeight - this.labelHeight);
 	}
 
 	update(e){
-		if (e.touches)
-    		var position = e.touches[0].clientY;
-  		else
-			var position = e.clientY;
+		let touch = e.touches[0];
+		Array.from(this.elem.children).forEach((elem, i) => {
+			let rect = elem.getBoundingClientRect();
+			// Recall origin is at top left, so y logic is reversed
+			if(!elem.classList.contains(`${this.elem_type}-axis-label`)
+				&& touch.clientX < rect.right
+				&& touch.clientX > rect.left
+				&& touch.clientY < rect.bottom
+				&& touch.clientY > rect.top){
+					this.setTargetElement(elem);
 
-		let diff = position - this.sliderPosition;
-		let height = this.initialHeight - diff;
-		//Scale to incriments of 10% of total height
-		setBoxHeight(height, this.maxHeight, this.elem);
+					let position = e.touches[0].clientY;
+
+					let height = this.maxHeight + this.sliderHeight + e.currentTarget.getBoundingClientRect().top - position;
+					setBoxHeight(height, this.maxHeight, this.bar);
+			}
+		});
 	}
 }
 
-function beginSlide(e, elem_type){
-	/*
-		Supported elem_type:
-		pricing
-		usage
-	*/
-
-	e.preventDefault();
-	var bar;
-	if (e.touches) {
-		var sliderPosition = e.touches[0].clientY;
-	} else{
-		var sliderPosition = e.clientY;
+function endMovement(e){
+	if(inProgress.length > 0){
+		inProgress = [];
 	}
-	switch(elem_type){
-		case "pricing":
-			bar = e.currentTarget.parentElement.querySelectorAll(".pricing-bar")[0];
-			inProgress.push(new PricingDragInProgress(bar, bar.offsetHeight, sliderPosition));
-			break;
-		case "usage":
-			bar = e.currentTarget.parentElement.querySelectorAll(".usage-bar")[0];
-			inProgress.push(new UsageDragInProgress(bar, bar.offsetHeight, sliderPosition));
-			break;
-	}
-}
-
-function endSlide(e){
-	e.preventDefault();
-	inProgress = [];
 }
 
 function addEventListeners(){
 	// Initialize event listeners
-	// Pricing event listeners
-	$(".pricing-slider").on('touchstart', (e) => {
-		beginSlide(e, "pricing");
-  });
-  $(".pricing-slider").on('mousedown', (e) => {
-		beginSlide(e, "pricing");
-  });
-  $(".pricing-slider").on('touchend', (e) => {
-		endSlide(e);
-  });
-	$(".pricing-slider").on('touchend', (e) => {
-		endSlide(e);
-	});
-	$(".pricing-slider").on('click', function(e) {
-		e.preventDefault();
-	})
-	$(".pricing-slider").on('touchcancel', (e) => {
-		endSlide(e);
-	});
+	// Add for pricing and usage graphs
+	elem_types = ["pricing", "usage"];
+	elem_types.forEach((elem_type, i) => {
+		// Begin movement
+		$(`.${elem_type}-box`).on('touchenter', (e) => {
+			inProgress.push(new TouchInProgress(e.currentTarget, elem_type));
+	  });
+	  $(`.${elem_type}-box`).on('mousedown', (e) => {
+			inProgress.push(new TouchInProgress(e.currentTarget, elem_type));
+	  });
 
-	// Usage event listeners
-	$(".usage-slider").on('touchstart', (e) => {
-		beginSlide(e, "usage");
-	});
-	$(".usage-slider").on('mousedown', (e) => {
-		beginSlide(e, "usage");
-	});
-	$(".usage-slider").on('touchend', (e) => {
-		endSlide(e);
-	});
-	$(".usage-slider").on('touchend', (e) => {
-		endSlide(e);
-	});
-	$(".usage-slider").on('click', function(e) {
-		e.preventDefault();
-	})
-	$(".usage-slider").on('touchcancel', (e) => {
-		endSlide(e);
-	});
-
-	// Body event listeners
-	$("body").on('touchmove', (e) => {
-    	inProgress.forEach( x => {
-			x.update(e);
+		// End movement
+	  $(`.${elem_type}-box`).on('touchend', (e) => {
+			endMovement(e);
+	  });
+		$(`.${elem_type}-box`).on('touchcancel', (e) => {
+			endMovement(e);
 		});
-  });
-	$("body").on('mousemove', (e) => {
-		inProgress.forEach( x => {
-			x.update(e);
+
+		$(`.${elem_type}-box`).on("mousemove", (e) => {
+			//console.log(inProgress);
+			if(inProgress.length != 0 && e.target.className != `${elem_type}-label w-100`){
+				inProgress.forEach(x => {
+					x.update(e);
+				});
+			}
 		});
+
+		$(`.${elem_type}-container`).on("touchmove", (e) => {
+			console.log(e.touches[0].clientX);
+				/*if(inProgress.length == 0){
+					inProgress.push(new DragInProgress(e.currentTarget, elem_type));
+				} else{
+					inProgress.forEach((x, i) => {
+						x.update(e);
+					});
+
+				}*/
+		});
+
 	});
 
+	// End movement
 	$("body").on("mouseup", (e) => {
-		endSlide(e);
+		endMovement(e);
 	});
 }
 
@@ -252,8 +226,7 @@ $(document).ready(function(){
 		6, 6, 6, 6]);
 	initialize_box_classes("usage", [400, 300, 200, 200, 200, 300, 300, 400, 500, 500, 500,
 			500, 500, 500, 400, 400, 500, 600, 700, 700, 600, 600, 500, 400]);
-	initialize_box_classes("result", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 700);
+	initialize_box_classes("result", [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 125.01818181818182, 380.2636363636363, 755.3181818181819, 880.3363636363636, 1135.581818181818, 1135.581818181818, 1135.581818181818, 1135.581818181818, 1010.5636363636363, 755.3181818181819, 505.28181818181815, 0, 0, 0, 0], "auto");
 
 	// Initialize event listeners
 	$(".slider-input").on("change", event =>{

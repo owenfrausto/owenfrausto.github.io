@@ -90,8 +90,8 @@ html, body {
 	height: 4%;
 }
 
-.pricing-slider:hover, .usage-slider{
-	cursor: row-resize;
+.pricing-box:hover, .usage-box:hover{
+	
 }
 
 .result-slider{
